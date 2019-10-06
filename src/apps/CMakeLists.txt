@@ -34,6 +34,26 @@ endif()
 #force sgct to build
 link_libraries(${LIB_NAME})
 
+
+
+#HACK because glfw headers aren't found in windows otherwise (at least with VS2019)
+if(NOT DEFINED SGCT_INCLUDE_DIRECTORY)
+	if( WIN32 )
+		find_path(SGCT_INCLUDE_DIRECTORY 
+			NAMES sgct
+			PATHS $ENV{SGCT_ROOT_DIR}/include NO_DEFAULT_PATH
+			REQUIRED)
+	else()
+		find_path(SGCT_INCLUDE_DIRECTORY 
+			NAMES sgct
+			PATH_SUFFIXES sgct
+			PATHS $ENV{SGCT_ROOT_DIR}/include
+			REQUIRED)
+	endif()
+endif()
++include_directories(${SGCT_INCLUDE_DIRECTORY} ${SGCT_INCLUDE_DIRECTORY}/../src/deps/glfw/include)
+#end hack
+
 add_subdirectory(calibrator)
 add_subdirectory(clustertest)
 add_subdirectory(dataTransfer_opengl3)
