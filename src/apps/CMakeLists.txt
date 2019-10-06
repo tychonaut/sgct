@@ -35,6 +35,20 @@ endif()
 link_libraries(${LIB_NAME})
 
 
+# otherwise copy of resources doesn't work
+set(SGCT_EXAMPLE_OUTPUT_DIR ${PROJECT_BINARY_DIR})
+#message(PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR})
+message(SGCT_EXAMPLE_OUTPUT_DIR: ${SGCT_EXAMPLE_OUTPUT_DIR})
+
+
+
+#copy SharedResources
+if(SGCT_COPY_EXAMPLE_RESOURCES AND NOT SGCT_PLACE_TARGETS_IN_SOURCE_TREE )
+	file(GLOB sharedResFiles
+		"${PROJECT_SOURCE_DIR}/SharedResources/*.*")
+	file(COPY ${sharedResFiles} DESTINATION ${SGCT_EXAMPLE_OUTPUT_DIR}/SharedResources)
+endif() #copy data
+
 
 #HACK because glfw headers aren't found in windows otherwise (at least with VS2019)
 if(NOT DEFINED SGCT_INCLUDE_DIRECTORY)
@@ -51,8 +65,37 @@ if(NOT DEFINED SGCT_INCLUDE_DIRECTORY)
 			REQUIRED)
 	endif()
 endif()
-+include_directories(${SGCT_INCLUDE_DIRECTORY} ${SGCT_INCLUDE_DIRECTORY}/../src/deps/glfw/include)
+include_directories(${SGCT_INCLUDE_DIRECTORY} ${SGCT_INCLUDE_DIRECTORY}/../src/deps/glfw/include)
 #end hack
+
+
+
+	
+#HACK; hardcode to find library binary; TODO make this more general
+if(NOT DEFINED SGCT_RELEASE_LIBRARY)
+	if(SGCT_CPP11)	
+		find_library(SGCT_RELEASE_LIBRARY
+			PATHS $ENV{SGCT_ROOT_DIR}/buildOut/lib/msvc16
+			NAMES sgct_cpp11 libsgct_cpp11 REQUIRED)
+	else()
+		find_library(SGCT_RELEASE_LIBRARY
+			PATHS $ENV{SGCT_ROOT_DIR}/buildOut/lib/msvc16
+			NAMES sgct libsgct REQUIRED)
+	endif()
+endif()
+if(NOT DEFINED SGCT_DEBUG_LIBRARY)		
+	if(SGCT_CPP11)	
+		find_library(SGCT_DEBUG_LIBRARY 
+			PATHS $ENV{SGCT_ROOT_DIR}/buildOut/lib/msvc16
+			NAMES sgct_cpp11d libsgct_cpp11d REQUIRED)
+	else()
+		find_library(SGCT_DEBUG_LIBRARY 
+			PATHS $ENV{SGCT_ROOT_DIR}/buildOut/lib/msvc16
+			NAMES sgctd libsgctd REQUIRED)
+	endif()
+endif()
+#end hack
+
 
 add_subdirectory(calibrator)
 add_subdirectory(clustertest)
