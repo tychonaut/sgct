@@ -44,7 +44,9 @@ int main( int argc, char* argv[] )
     gEngine->setPostSyncPreDrawFunction( myPostSyncPreDrawFun );
     gEngine->setKeyboardCallbackFunction( keyCallback );
 
-    if( !gEngine->init() )
+    if( !gEngine->init(
+			//sgct::Engine::OpenGL_4_6_Debug_Core_Profile
+		) )
     {
         delete gEngine;
         return EXIT_FAILURE;

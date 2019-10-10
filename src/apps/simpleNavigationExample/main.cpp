@@ -272,6 +272,8 @@ void drawPyramid(float width)
     glLineWidth(2.0f);
     glColor4f(1.0f, 0.0f, 0.5f, 0.8f);
 
+	const float height = 10.0f;
+
     glBegin(GL_LINE_LOOP);
     glVertex3f(-width/2.0f, 0.0f, -width/2.0f);
     glVertex3f(0.0f, 2.0f, 0.0f);
@@ -301,7 +303,7 @@ void drawPyramid(float width)
     glPolygonOffset(0.0f, 0.0f); //offset to avoid z-buffer fighting
     glBegin(GL_TRIANGLE_FAN);
     //draw top
-    glVertex3f(0.0f, 2.0f, 0.0f);
+    glVertex3f(0.0f, height, 0.0f);
 
     //draw sides
     glVertex3f(-width / 2.0f, 0.0f, -width / 2.0f);

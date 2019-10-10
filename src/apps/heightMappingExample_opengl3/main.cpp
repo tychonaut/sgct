@@ -70,7 +70,10 @@ int main( int argc, char* argv[] )
     gEngine->setCleanUpFunction( myCleanUpFun );
     gEngine->setKeyboardCallbackFunction( keyCallback );
 
-    if( !gEngine->init( sgct::Engine::OpenGL_3_3_Core_Profile ) )
+    if( !gEngine->init( 
+		sgct::Engine::OpenGL_3_3_Core_Profile 
+		//sgct::Engine::OpenGL_4_6_Debug_Core_Profile
+	) )
     {
         delete gEngine;
         return EXIT_FAILURE;

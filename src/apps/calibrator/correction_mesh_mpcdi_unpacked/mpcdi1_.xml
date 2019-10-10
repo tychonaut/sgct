@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MPCDI profile="3d" geometry="1" color="TBD" date="2017-09-01 18:46:17" version="2.0">
+  <display>
+    <buffer id="surface1" xResolution="512" yResolution="540">
+      <region id="surface1_region" x="0" y="0" xSize="1" ySize="1" xResolution="512" yResolution="540">
+        <frustum>
+          <yaw>326.675157</yaw>
+          <pitch>27.327616</pitch>
+          <roll>-14.611227</roll>
+          <rightAngle>33.231552</rightAngle>
+          <leftAngle>-33.231552</leftAngle>
+          <upAngle>34.644394</upAngle>
+          <downAngle>-34.644394</downAngle>
+        </frustum>
+      </region>
+    </buffer>
+  </display>
+  <files>
+    <fileset region="surface1_region">
+      <geometryWarpFile>
+        <path>surface1.pfm</path>
+        <interpolation>linear</interpolation>
+      </geometryWarpFile>
+      <alphaMap />
+    </fileset>
+  </files>
+</MPCDI>

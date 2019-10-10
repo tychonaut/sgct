@@ -189,6 +189,13 @@ bool sgct_core::CorrectionMesh::readAndGenerateMesh(std::string meshPath, sgct_c
         //if (hint == MPCDI_HINT)
         meshFmt = MPCDI_FMT;
     }
+	else if (path.find(".pfm") != std::string::npos) //portable floatmap, MPCDI encodes the warp "mesh" as raster image;
+	{
+		if (hint == MPCDI_HINT)
+		{
+			meshFmt = MPCDI_FMT;
+		}
+	}
     else if (path.find(".simcad") != std::string::npos)
     {
         if (hint == NO_HINT || hint == SIMCAD_HINT)//default for this suffix
@@ -228,11 +235,24 @@ bool sgct_core::CorrectionMesh::readAndGenerateMesh(std::string meshPath, sgct_c
         break;
 
     case MPCDI_FMT:
-        loadStatus = readAndGenerateMpcdiMesh("", parent);
-        break;
+		if (path.find(".pfm") != std::string::npos) 
+		{
+			// portable floatmap, MPCDI encodes the warp "mesh" as raster image; 
+			// indicates that NOT a full zipped *.mpcdi file is loaded, but only the warp subset of it, which it a .pfm file
+			loadStatus = readAndGenerateMpcdiMesh(meshPath, parent);
+		}
+		else
+		{
+			// old code; passing an empty path string; 
+			// I suggest it's because an MPCDI file is loaded before this mesh-generation function and hence indicates that the data shall be grabed from an object in RAM instead of loading from file
+			loadStatus = readAndGenerateMpcdiMesh("", parent); 
+		}
+		break;
             
     case NO_FMT:
+
         sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_ERROR, "CorrectionMesh error: Loading mesh '%s' failed!\n", meshPath.c_str());
+		break;
     }
 
     //export
@@ -1826,7 +1846,8 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
         sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_INFO,
             "CorrectionMesh: Reading MPCDI mesh (PFM format) data from '%s'.\n", meshPath.c_str());
 #if (_MSC_VER >= 1400) //visual studio 2005 or later
-        if (fopen_s(&meshFile, meshPath.c_str(), "r") != 0 || !meshFile)
+        //if (fopen_s(&meshFile, meshPath.c_str(), "r") != 0 || !meshFile)
+		if (fopen_s(&meshFile, meshPath.c_str(), "rb") != 0 || !meshFile)
         {
             sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_ERROR,
                 "CorrectionMesh: Failed to open warping mesh file!\n");
@@ -1876,12 +1897,14 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
                 retval = 1;
             }
         }
+
         if (retval != 1) {
             sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_ERROR,
                                                     "CorrectionMesh: Error reading from file.\n");
             fclose(meshFile);
             return false;
         }
+
         headerBuffer[index++] = headerChar;
         if( headerChar == '\n' )
             nNewlines++;
@@ -1916,49 +1939,98 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
         sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_ERROR,
                                                 "CorrectionMesh: Incorrect file type.\n");
     }
+
     int numCorrectionValues = numberOfCols * numberOfRows;
+	
+	float* allFloats = new float[3 * numCorrectionValues];
     float* correctionGridX = new float[numCorrectionValues];
     float* correctionGridY = new float[numCorrectionValues];
-    float  errorPosition;
+    //float  errorPosition;
+	float * errorValues = new float[numCorrectionValues];
+
+	memset(allFloats,       0, 3 * sizeof(float) * numCorrectionValues);
+	memset(correctionGridX, 1, 1 * sizeof(float) * numCorrectionValues);
+	memset(correctionGridY, 2, 1 * sizeof(float) * numCorrectionValues);
+	memset(errorValues,     0, 1 * sizeof(float) * numCorrectionValues);
+
+
     const int value32bit = 4;
 
     if( isReadingFile )
     {
-#if (_MSC_VER >= 1400) //visual studio 2005 or later
- #define SGCT_READ fread_s
-#else
- #define SGCT_READ fread
-#endif
-        for (int i = 0; i < numCorrectionValues; ++i)
-        {
-#ifdef __WIN32__
-            retval = SGCT_READ(correctionGridX + i, numCorrectionValues, value32bit, 1, meshFile);
-            retval = SGCT_READ(correctionGridY + i, numCorrectionValues, value32bit, 1, meshFile);
-            //MPCDI uses the PFM format for correction grid. PFM format is designed for 3 RGB
-            // values. However MPCDI substitutes Red for X correction, Green for Y
-            // correction, and Blue for correction error. This will be NaN for no error value
-            retval = SGCT_READ(&errorPosition, numCorrectionValues, value32bit, 1, meshFile);
-#else
-            retval = SGCT_READ(correctionGridX + i, value32bit, 1, meshFile);
-            retval = SGCT_READ(correctionGridY + i, value32bit, 1, meshFile);
-            retval = SGCT_READ(&errorPosition,      value32bit, 1, meshFile);
-#endif
-        }
+		fread_s(
+			static_cast<void*>(allFloats), 
+			3 * sizeof(float) * numCorrectionValues, 
+			sizeof(float), 
+			3* numCorrectionValues, 
+			meshFile);
+
+		for (size_t i = 0; i < numCorrectionValues; i++)
+		{
+			//distribute raw read
+			correctionGridX[i] = allFloats[3 * i + 0];
+			correctionGridY[i] = allFloats[3 * i + 1];
+			errorValues    [i] = allFloats[3 * i + 2];
+		}
+
+
+		//for some reasons I don't understnad, this code stops fuilling the buffer after the four'th float value...
+//#if (_MSC_VER >= 1400) //visual studio 2005 or later
+// #define SGCT_READ fread_s
+//#else
+// #define SGCT_READ fread
+//#endif
+//        for (int i = 0; i < numCorrectionValues; ++i)
+//        {
+//
+//
+//#ifdef __WIN32__ 
+//            retval = SGCT_READ(correctionGridX + i, sizeof(float), sizeof(float), 1, meshFile);
+//            retval = SGCT_READ(correctionGridY + i, sizeof(float), sizeof(float), 1, meshFile);
+//            //MPCDI uses the PFM format for correction grid. PFM format is designed for 3 RGB
+//            // values. However MPCDI substitutes Red for X correction, Green for Y
+//            // correction, and Blue for correction error. This will be NaN for no error value
+//            retval = SGCT_READ(&errorPosition, sizeof(float), sizeof(float), 1, meshFile);
+//
+//#else
+//            retval = SGCT_READ(correctionGridX + i, value32bit, 1, meshFile);
+//            retval = SGCT_READ(correctionGridY + i, value32bit, 1, meshFile);
+//            retval = SGCT_READ(&errorPosition,      value32bit, 1, meshFile);
+//#endif
+//
+//
+//
+//        }
+
         fclose(meshFile);
-        if (retval != value32bit)
+        
+		// old code, not working on windows 10 with VS2019
+		// there is not "4" expectedt as return value, but 1 or zero, depending on error or EOGF:
+		// https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/fread-s?view=vs-2019#return-value
+		// I don't know about the other platforms, so just doing a HACK here to also allow 0 and 1 as return value
+		//if (retval != value32bit)
+		if ( ! (
+			(retval == value32bit)
+			||
+			(retval == 0)
+			||
+			(retval == 1)
+			)
+		)
         {
             sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_ERROR,
                 "CorrectionMesh: Error reading all correction values!\n");
             return false;
         }
+
     }
-    else
+    else // read from local object
     {
         bool readErr = false;
         for (int i = 0; i < numCorrectionValues; ++i)
         {
-//#define TEST_FLAT_MESH
 
+//#define TEST_FLAT_MESH
 #ifdef TEST_FLAT_MESH
             correctionGridX[i] = (float)(i%32) / 32.0;
             correctionGridY[i] = 1.0 - (float)i * 32.0 / 32.0;
@@ -1967,7 +2039,7 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
                 readErr = true;
             else if( !readMeshBuffer(&correctionGridY[i], srcIdx, srcBuff, srcSize_bytes, value32bit) )
                 readErr = true;
-            else if( !readMeshBuffer(&errorPosition, srcIdx, srcBuff, srcSize_bytes, value32bit) )
+            else if( !readMeshBuffer(&errorValues[i], srcIdx, srcBuff, srcSize_bytes, value32bit) )
                 readErr = true;
 
             if( readErr ) {
@@ -1976,6 +2048,8 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
             }
 #endif
         }
+
+
     }
 
     int   gridIndex_column, gridIndex_row;
@@ -1990,13 +2064,25 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
         //Compute XY positions for each point based on a normalized 0,0 to 1,1 grid,
         // add the correction offsets to each warp point
         smoothPos_x[i] = (float)gridIndex_column / (float)(numberOfCols - 1);
-        //Reverse the y position because the values from pfm file are given in raster-scan
+        
+		
+		//Reverse the y position because the values from pfm file are given in raster-scan
         // order, which is left to right but starts at upper-left rather than lower-left.
         smoothPos_y[i] = 1.0f - ((float)gridIndex_row    / (float)(numberOfRows - 1));
-        warpedPos_x[i] = smoothPos_x[i] + correctionGridX[i];
-        warpedPos_y[i] = smoothPos_y[i] + correctionGridY[i];
+		//test HACK:
+		//smoothPos_y[i] =  ((float)gridIndex_row / (float)(numberOfRows - 1));
+        
+		//old code
+		//warpedPos_x[i] = smoothPos_x[i] + correctionGridX[i];
+        //warpedPos_y[i] = smoothPos_y[i] + correctionGridY[i];
+		
+		//HACK TEST
+		warpedPos_x[i] = correctionGridX[i]; // * sin( 1.57 * float(gridIndex_column) / (float(numberOfCols)) );
+		warpedPos_y[i] = correctionGridY[i]; // * sin( 1.57 * float(gridIndex_row) / (float(numberOfRows)));
     }
 
+
+//#define NORMALIZE_CORRECTION_MESH
 #ifdef NORMALIZE_CORRECTION_MESH
     float maxX = *std::max_element(warpedPos_x, warpedPos_x + numCorrectionValues);
     float minX = *std::min_element(warpedPos_x, warpedPos_x + numCorrectionValues);
@@ -2019,13 +2105,25 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
     vertex.g = 1.0f;
     vertex.b = 1.0f;
     vertex.a = 1.0f;
-    for (int i = 0; i < numCorrectionValues; ++i) {
-        vertex.s = smoothPos_x[i];
-        vertex.t = smoothPos_y[i];
-        //scale to viewport coordinates
-        vertex.x = 2.0f * warpedPos_x[i] - 1.0f;
-        vertex.y = 2.0f * warpedPos_y[i] - 1.0f;
-        vertices.push_back(vertex);
+
+    for (int i = 0; i < numCorrectionValues; ++i) 
+	{
+        //vertex.s = smoothPos_x[i];
+        //vertex.t = smoothPos_y[i];
+
+        ////scale to viewport coordinates
+        //vertex.x = 2.0f * warpedPos_x[i] - 1.0f;
+        //vertex.y = 2.0f * warpedPos_y[i] - 1.0f;
+
+
+		//scale to viewport coordinates
+		vertex.x = 2.0f * smoothPos_x[i] - 1.0f;
+		vertex.y = 2.0f * smoothPos_y[i] - 1.0f;
+
+		vertex.s = 1.0f * warpedPos_x[i] - 0.0f;
+		vertex.t = 1.0f * warpedPos_y[i] - 0.0f;
+
+		vertices.push_back(vertex);
     }
     delete[] warpedPos_x;
     delete[] warpedPos_y;
