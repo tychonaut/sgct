@@ -2076,9 +2076,9 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
 		//warpedPos_x[i] = smoothPos_x[i] + correctionGridX[i];
         //warpedPos_y[i] = smoothPos_y[i] + correctionGridY[i];
 		
-		//HACK TEST
-		warpedPos_x[i] = correctionGridX[i]; // * sin( 1.57 * float(gridIndex_column) / (float(numberOfCols)) );
-		warpedPos_y[i] = correctionGridY[i]; // * sin( 1.57 * float(gridIndex_row) / (float(numberOfRows)));
+		//HACK TEST: actually works for LUT:
+		warpedPos_x[i] = correctionGridX[i]; 
+		warpedPos_y[i] = correctionGridY[i]; 
     }
 
 
@@ -2097,6 +2097,20 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
         warpedPos_y[i] = (warpedPos_y[i] - minY) / scaleFactor;
     }
 #endif //NORMALIZE_CORRECTION_MESH
+
+#define CORRECT_LUT_INTO_DOMEMASTER_BY_VIEWPORT_ASPECT_RATIO
+#ifdef  CORRECT_LUT_INTO_DOMEMASTER_BY_VIEWPORT_ASPECT_RATIO
+	//force regeneration of dome render quad
+	if (FisheyeProjection* fishPrj = dynamic_cast<FisheyeProjection*>(parent->getNonLinearProjectionPtr()))
+	{
+		fishPrj->setIgnoreAspectRatio(true);
+		fishPrj->update(1.0f, 1.0f);
+	}
+#endif
+
+
+
+
 
     CorrectionMeshVertex vertex;
     std::vector<CorrectionMeshVertex> vertices;
