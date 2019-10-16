@@ -2068,9 +2068,9 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
 		
 		//Reverse the y position because the values from pfm file are given in raster-scan
         // order, which is left to right but starts at upper-left rather than lower-left.
-        smoothPos_y[i] = 1.0f - ((float)gridIndex_row    / (float)(numberOfRows - 1));
-		//test HACK:
-		//smoothPos_y[i] =  ((float)gridIndex_row / (float)(numberOfRows - 1));
+        //smoothPos_y[i] = 1.0f - ((float)gridIndex_row    / (float)(numberOfRows - 1));
+		//test HACK: this non-inversion actually works with pfm files that look "correct" e.g. in GIMP:
+		smoothPos_y[i] =  ((float)gridIndex_row / (float)(numberOfRows - 1));
         
 		//old code
 		//warpedPos_x[i] = smoothPos_x[i] + correctionGridX[i];

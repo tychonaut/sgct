@@ -22,183 +22,46 @@
 	<Node address="localhost" port="20401">
 		
 		<!--
-	    <Window fullScreen="false" msaa="4" border="false">
-			<Size x="2560" y="1600" />
-			<Pos x="0" y="0" />
-			<Viewport>
-				<Pos x="0.0" y="0.0" />
-				<Size x="1.0" y="1.0" />
-				<Projectionplane>
-					<Pos x="-1.978" y="-1.0" z="0.0" />
-					<Pos x="-1.978" y="1.0" z="0.0" />
-					<Pos x="-0.2" y="1.0" z="0.0" />
-				</Projectionplane>
-			</Viewport>
-		</Window>
+		<Window name="allFiveProjectorsInOneMosaic" fullScreen="false" border="false">
 		-->
-		
-		<!--
-		<region id="Display0" x="0.0000000" y="0.3706484" xSize="0.5394042" ySize="0.6293516" xResolution ="2553" yResolution="2766" >
-		-->
-
-		<Window name="win0of5" fullScreen="false" border="false">
-		
+		<Window name="allFiveProjectorsInOneMosaic" fullScreen="false" border="true">
 			<Stereo type="none" />
 			
-			<Size x="2560" y="1600" />
-			<Pos  x="0" y="0" />
-			
-			<!-- 16:9 aspect ratio -->
 			<!--
-			<Size x="2553" y="2766" />
+			<Size x="5120" y="4800" />
 			<Pos  x="0" y="0" />
-			-->
+			<Size x="512" y="480" />
+			<Pos  x="0" y="0" />
 			
+			<Size x="1024" y="960" />
+			<Pos  x="100" y="100" />
 			
-			<!-- Frame buffer resolution
-			<Res x="4096" y="4096" /> 
+			<Size x="1024" y="1024" />
+			<Pos  x="100" y="100" />
+			
 			-->
+			<Size x="1600" y="1600" />
+			<Pos  x="10" y="10" />
+		
+			<Viewport 
+				name="allprojectors_viewport"
+				mask="E:\sgct_playground\sgct\config\\OwnCalibPFMExport\BLEND_D1 BARCO WQXGA   (BPS0FF4).png" 				
+				
+				hint="mpcdi"
+				mesh="E:\sgct_playground\sgct\config\OwnCalibPFMExport\WARP_D1 BARCO WQXGA   (BPS0FF4).pfm" 		
+			>
 			<!--
-				quality options (cubemap size):
-					- low (256)
-					- medium (512)
-					- high/1k (1024)
-					- 2k (2048)
-					- 4k (4096)
-					- 8k (8192)
-				tilt specifies the dome tilt angle in degrees from the horizontal
 			-->
-			<Viewport 
-				name="projector0_viewport"
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display0.png" 				
-				
-				hint="mpcdi"
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display0.pfm" 
-				
-			>
-				<!--
-				hint="sciss"
-				mesh="E:\sgct_playground\sgct\config\SCISS\OS-testcalib_10.0.10.2_DSC-85_Display5-0x1.sgc" 
-				
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display3.pfm" 
-				display 2 warping looks good with PlanarProjection <FOV down="25.267007923362" left="40.0" right="40.0" up="25.267007923362" />
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display2.png" 				
-				
-				<Pos x="0.0" y="0.0" />
-				<Size x="1.0" y="1.0" />
-				
-				
-				<FisheyeProjection fov="180" quality="4k" tilt="90.0">
-					<Background r="0.5" g="0.5" b="0.5" a="1.0" />
+
+				<FisheyeProjection fov="180" quality="4k" tilt="0.0">
+					<Background r="1.0" g="0.0" b="0.0" a="1.0" />
 				</FisheyeProjection>
-				-->
-				 
-				<PlanarProjection>
-                    <FOV down="25.267007923362" left="40.0" right="40.0" up="25.267007923362" />
-                    <Orientation heading="-0.0" pitch="85.0" roll="0.0" />
-                </PlanarProjection>
 			
 			</Viewport>
 		</Window>
 		
 		
 		
-		<Window name="win1of5" fullScreen="false" border="false">
-		
-			<Stereo type="none" />
-			
-			<Size x="2560" y="1600" />
-			<Pos  x="0" y="0" />
-			
-			<Viewport 
-				name="projector0_viewport"
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display1.png" 				
-				
-				hint="mpcdi"
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display1.pfm" 	
-			>
-
-				<PlanarProjection>
-                    <FOV down="25.267007923362" left="40.0" right="40.0" up="25.267007923362" />
-                    <Orientation heading="180.0" pitch="20.0" roll="180.0" />
-                </PlanarProjection>
-			
-			</Viewport>
-		</Window>
-		
-		<Window name="win2of5" fullScreen="false" border="false">
-		
-			<Stereo type="none" />
-			
-			<Size x="2560" y="1600" />
-			<Pos  x="2560" y="0" />
-			
-			<Viewport 
-				name="projector0_viewport"
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display2.png" 				
-				
-				hint="mpcdi"
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display2.pfm" 	
-			>
-
-				<PlanarProjection>
-                    <FOV down="25.267007923362" left="40.0" right="40.0" up="25.267007923362" />
-                    <Orientation heading="0.0" pitch="20.0" roll="0.0" />
-                </PlanarProjection>
-			
-			</Viewport>
-		</Window>
-		
-
-
-
-
-		<Window name="win3of5" fullScreen="false" border="false">
-		
-			<Stereo type="none" />
-			
-			<Size x="2560" y="1600" />
-			<Pos  x="2560" y="0" />
-			
-			<Viewport 
-				name="projector0_viewport"
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display3.png" 				
-				
-				hint="mpcdi"
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display3.pfm" 	
-			>
-
-				<PlanarProjection>
-                    <FOV down="25.267007923362" left="40.0" right="40.0" up="25.267007923362" />
-                    <Orientation heading="90.0" pitch="20.0" roll="0.0" />
-                </PlanarProjection>
-			
-			</Viewport>
-		</Window>
-
-
-		<Window name="win4of5" fullScreen="false" border="false">
-		
-			<Stereo type="none" />
-			
-			<Size x="2560" y="1600" />
-			<Pos  x="2560" y="0" />
-			
-			<Viewport 
-				name="projector0_viewport"
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display4.png" 				
-				
-				hint="mpcdi"
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display4.pfm" 	
-			>
-
-				<PlanarProjection>
-                    <FOV down="25.267007923362" left="40.0" right="40.0" up="25.267007923362" />
-                    <Orientation heading="-90.0" pitch="20.0" roll="0.0" />
-                </PlanarProjection>
-			
-			</Viewport>
-		</Window>
 
 
 
@@ -207,82 +70,11 @@
 
 
 
-		
-		<!--
-		
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display0.pfm" 
-		
-		<Window  fullScreen="false" name="Client1" border="false">
-
-            <Pos x="2560" y="0" />
-            <Size x="2560" y="1600" />  
-
-            <Viewport 
-				name="fisheye_projector1"
-
-			>
-
-				<Pos x="0.0" y="0.0" />
-				<Size x="1.0" y="1.0" />
-
-				<FisheyeProjection fov="180" quality="medium" tilt="27.0">
-					<Background r="0.1" g="0.1" b="0.1" a="1.0" />
-				</FisheyeProjection>
-
-			</Viewport>
-
-        </Window>
-		
-		
 
 
-				
-				mask="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display0.png" 
-				mesh="E:\sgct_playground\sgct\config\MPCDI_v1_1\Display0.pfm" 
-				hint="mpcdi"
-        
-		
-		<Window name="Client2" border="false">
 
-            <Pos x="2560" y="0" />
 
-            <Size x="2560" y="1600" />
 
-            <Viewport mesh="GEOMAR_10.0.10.2_DSC-163_Display5-0x1.sgc" mask="GEOMAR_10.0.10.2_DSC-163_Display5-0x1.png" />
-
-        </Window>
-
-        <Window name="Client3" border="false">
-
-            <Pos x="2560" y="1600" />
-
-            <Size x="2560" y="1600" />
-
-            <Viewport mesh="GEOMAR_10.0.10.2_DSC-163_Display5-1x1.sgc" mask="GEOMAR_10.0.10.2_DSC-163_Display5-1x1.png" />
-
-        </Window>
-
-        <Window name="Client4" border="false">
-
-            <Pos x="0" y="3200" />
-
-            <Size x="2560" y="1600" />
-
-            <Viewport mesh="GEOMAR_10.0.10.2_DSC-163_Display5-2x0.sgc" mask="GEOMAR_10.0.10.2_DSC-163_Display5-2x0.png" />
-
-        </Window>
-
-        <Window name="Client5" border="false">
-
-            <Pos x="2560" y="3200" />
-
-            <Size x="2560" y="1600" />
-
-            <Viewport mesh="GEOMAR_10.0.10.2_DSC-163_Display5-2x1.sgc" mask="GEOMAR_10.0.10.2_DSC-163_Display5-2x1.png" />
-
-        </Window>
-		
-		-->
 		
 	</Node>
 		
