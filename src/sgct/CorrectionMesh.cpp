@@ -923,7 +923,7 @@ bool sgct_core::CorrectionMesh::readAndGenerateSimCADMesh(const std::string & me
      This means 33x33 points can be set to define geometry correction.
      So(x, y) coordinates are defined by the 33x33 matrix and the resolution used, defined by the tag.
      And the corrections to be applied for every point in that 33x33 matrix, are stored in the warp file.
-     This explains why this file only contains zero’s when no warp is applied.*/
+     This explains why this file only contains zeroâ€™s when no warp is applied.*/
 
     sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_INFO,
         "CorrectionMesh: Reading simcad warp data from '%s'.\n", meshPath.c_str());
@@ -2004,6 +2004,9 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
 
         fclose(meshFile);
         
+
+
+
 		// old code, not working on windows 10 with VS2019
 		// there is not "4" expectedt as return value, but 1 or zero, depending on error or EOGF:
 		// https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/fread-s?view=vs-2019#return-value
@@ -2078,7 +2081,10 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
 		
 		//HACK TEST: actually works for LUT:
 		warpedPos_x[i] = correctionGridX[i]; 
-		warpedPos_y[i] = correctionGridY[i]; 
+        //my old code, was mirrored in Openspace
+		//warpedPos_y[i] = correctionGridY[i];  
+        // honor OpenSpace's internal convention of fisheye stuff..(?)
+        warpedPos_y[i] = 1.0f - correctionGridY[i];
     }
 
 
