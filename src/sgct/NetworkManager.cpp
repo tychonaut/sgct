@@ -971,7 +971,15 @@ void sgct_core::NetworkManager::retrieveNodeId()
         //check ip
         if( matchAddress( ClusterManager::instance()->getNodePtr(i)->getAddress() ) )
         {
-            ClusterManager::instance()->setThisNodeId( static_cast<int>(i) );
+            //ClusterManager::instance()->setThisNodeId( static_cast<int>(i) );
+
+            ClusterManager::instance()->setThisNodeId(
+                static_cast<int>(i)
+                +
+                // default zero; enabling multpole nateworking-capable instances on the same machine
+                ClusterManager::instance()->getThisNodelocalIDOffset() 
+            );
+
             sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_DEBUG,
                 "NetworkManager: Running in cluster mode as node %d\n", ClusterManager::instance()->getThisNodeId());
             break;

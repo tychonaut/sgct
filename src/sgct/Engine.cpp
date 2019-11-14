@@ -2985,6 +2985,7 @@ void sgct::Engine::parseArguments( std::vector<std::string>& arg )
             outputHelpMessage();
             arg.erase(arg.begin() + i);
         }
+        
         else if( arg[i] == "-local" && arg.size() > (i+1) )
         {
             sgct_core::ClusterManager::instance()->setNetworkMode( sgct_core::NetworkManager::LocalServer );
@@ -2995,6 +2996,22 @@ void sgct::Engine::parseArguments( std::vector<std::string>& arg )
             arg.erase(arg.begin() + i);
             arg.erase(arg.begin() + i);
         }
+
+        // enable multiple instances running on same machine
+        // by assigning an explicit localNodeOffset,
+        // added later to ID corresponding to the first network adress of the machine.
+        else if (arg[i] == "--localNodeOffset" && arg.size() > (i + 1))
+        {
+            //NOT needed to modify, we want networking features!
+            //sgct_core::ClusterManager::instance()->setNetworkMode(sgct_core::NetworkManager::LocalServer);
+            int tmpi = -1;
+            std::stringstream ss(arg[i + 1]);
+            ss >> tmpi;
+            sgct_core::ClusterManager::instance()->setThisNodelocalIDOffset(tmpi);
+            arg.erase(arg.begin() + i);
+            arg.erase(arg.begin() + i);
+        }
+
         else if( arg[i] == "-logPath" )
         {
             //Remove unwanted chars

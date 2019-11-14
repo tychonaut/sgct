@@ -84,9 +84,25 @@ public:
     void setThisNodeId(int id) { mThisNodeId = id; }
 
     /*!
-        \returns the id to the node which runs this application
+    \returns the id to the node which runs this application
     */
     int getThisNodeId() { return mThisNodeId; }
+
+
+    /*!
+        This is set automatically by parsing the  "--localNodeOffset <number>" command line argument
+
+        \param the index to the node where this application is running on
+    */
+    void setThisNodelocalIDOffset(int localNodeOffset) { mLocalNodeOffset = localNodeOffset; }
+
+
+    /*!
+        \returns   the local node ID offset, enabling multiple instances of SGCT running on the same machine, 
+                    while still maintaining networking capabilities
+    */
+    int getThisNodelocalIDOffset() { return mLocalNodeOffset; }
+
 
     std::string * getMasterAddress();
     void setMasterAddress(std::string address);
@@ -148,6 +164,11 @@ private:
 
     int masterIndex;
     int mThisNodeId;
+
+    //enabling multiple instances of SGCT running on the same machine, 
+    //while still maintaining networking capabilities
+    int mLocalNodeOffset;
+
     bool validCluster;
     bool mFirmFrameLockSync;
     bool mIgnoreSync;

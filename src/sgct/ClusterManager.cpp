@@ -16,6 +16,9 @@ sgct_core::ClusterManager::ClusterManager(void)
 {
     masterIndex = -1;
     mThisNodeId = -1;
+
+    mLocalNodeOffset = 0;
+
     validCluster = false;
     mFirmFrameLockSync = false;
     mIgnoreSync = false;
