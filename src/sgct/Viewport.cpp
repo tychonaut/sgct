@@ -683,11 +683,12 @@ void sgct_core::Viewport::setCorrectionMesh(const char * meshPath)
     mMeshFilename.assign(meshPath);
 }
 
-void sgct_core::Viewport::setMpcdiWarpMesh(const char* meshData, size_t size)
+void sgct_core::Viewport::setMpcdiWarpMesh(const char* meshData, size_t size, bool interpretDataDirectly)
 {
     mMpcdiWarpMeshData = new char[size];
     memcpy(mMpcdiWarpMeshData, meshData, size);
     mMpcdiWarpMeshSize = size;
+    mMpcdiInterpretWarpMeshDataDirectly = interpretDataDirectly;
 }
 
 void sgct_core::Viewport::setTracked(bool state)

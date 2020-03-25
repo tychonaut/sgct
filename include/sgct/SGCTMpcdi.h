@@ -62,6 +62,24 @@ struct MpcdiWarp {
     std::string pathWarpFile;
     bool haveFoundPath = false;
     bool haveFoundInterpolation = false;
+
+    /*
+    New unofficial param introduced by Markus Schlueter to make this work with OpenSpace:
+    "interpretation" of the float content of the .pfm image:
+    */
+    enum class Interpretation : int
+    {
+        // "offset": implicit default value
+        // (as done by Openspace 0.15.1 as of March 25th 2020):
+        offset, 
+        // "direct": alternative value, to make the warping more like an OpenGL UV-mapping
+        // that is decoupled from the actual vertex coordinate
+        // (and sounds more like the MPCDI sepcification to me:
+        // MPCDI v.2.0 Spec, chapter 3.6.2 "2D Data": 
+        //      "2D data will be stored as an absolute lookup that maps a source pixel to a destination pixel.") :
+        direct
+    };
+    Interpretation interpretation = Interpretation::offset;
 };
 
 struct MpcdiFoundItems {

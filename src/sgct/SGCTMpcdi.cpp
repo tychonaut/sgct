@@ -344,6 +344,7 @@ bool sgct_core::SGCTMpcdi::readAndParseXML_geoWarpFile(tinyxml2::XMLElement* ele
                                                              std::string filesetRegionId)
 {
     mWarp.push_back(new MpcdiWarp);
+
     mWarp.back()->id = filesetRegionId;
     element[3] = element[2]->FirstChildElement();
     while( element[3] != NULL )
@@ -365,6 +366,37 @@ bool sgct_core::SGCTMpcdi::readAndParseXML_geoWarpFile(tinyxml2::XMLElement* ele
             }
             mWarp.back()->haveFoundInterpolation = true;
         }
+        else if (strcmp("interpretation", val[3]) == 0)
+        {
+            // 
+            std::string interpretation = element[3]->GetText();
+            if (interpretation.compare("offset") != 0)
+            {
+                sgct::MessageHandler::instance()->print(
+                    sgct::MessageHandler::NOTIFY_DEBUG,
+                    "parseMpcdiXml: interpreting warp image content as offsets to a uniform grid (which is the implicit default in OpenSpace so far).\n");
+
+                mWarp.back()->interpretation = MpcdiWarp::Interpretation::offset;
+            }
+            else if (interpretation.compare("direct") != 0)
+            {
+                sgct::MessageHandler::instance()->print(
+                    sgct::MessageHandler::NOTIFY_DEBUG,
+                    " parseMpcdiXml: interpreting warp image content as a mapping from a uniform grid to normalized image coordinates"
+                    " in the same way like OpenGL UV mapping is a mapping from vertex coordinates to normalize image coordinates."
+                    " this is actually  closer to the MPCDI v.2.0 Spec, see chapter 3.6.2 '2D Data' \n");
+
+                mWarp.back()->interpretation = MpcdiWarp::Interpretation::direct;
+            }
+            else 
+            {
+                sgct::MessageHandler::instance()->print(
+                    sgct::MessageHandler::NOTIFY_WARNING,
+                    "parseMpcdiXml:unkown warp mesh interpretation parameter : %s .\n", interpretation);
+            }
+        }
+
+
         element[3] = element[3]->NextSiblingElement();
     }
     if(   mWarp.back()->haveFoundPath
@@ -386,7 +418,8 @@ bool sgct_core::SGCTMpcdi::readAndParseXML_geoWarpFile(tinyxml2::XMLElement* ele
                 {
                     tmpWin.getViewport(r)->setMpcdiWarpMesh(
                         mMpcdiSubFileContents.buffer[MpcdiSubFiles::mpcdiPfm],
-                        mMpcdiSubFileContents.size[MpcdiSubFiles::mpcdiPfm]);
+                        mMpcdiSubFileContents.size[MpcdiSubFiles::mpcdiPfm],
+                        mWarp.back()->interpretation == MpcdiWarp::Interpretation::direct);
                     foundMatchingPfmBuffer = true;
                 }
             }

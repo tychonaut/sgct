@@ -64,7 +64,7 @@ public:
     void setBlendMaskTexture(const char * texturePath);
     void setBlackLevelMaskTexture(const char * texturePath);
     void setCorrectionMesh(const char * meshPath);
-    void setMpcdiWarpMesh(const char* meshData, size_t size);
+    void setMpcdiWarpMesh(const char* meshData, size_t size, bool interpretDataDirectly);
     void setTracked(bool state);
     void loadData();
 
@@ -85,6 +85,10 @@ public:
 
     char* mMpcdiWarpMeshData = nullptr;
     size_t mMpcdiWarpMeshSize = 0;
+    // hacky place to put MPCDI stuff here imho, but I'm not here for refactoring;
+    // this seems to come from an unfortunate information flow path from parsing to mesh creation;
+    // See MpcdiWarp::Interpretation on semantics of this.
+    bool mMpcdiInterpretWarpMeshDataDirectly = false;
 
 private:
     void reset(float x, float y, float xSize, float ySize);

@@ -913,7 +913,7 @@ bool sgct_core::CorrectionMesh::readAndGenerateSimCADMesh(const std::string & me
      This means 33x33 points can be set to define geometry correction.
      So(x, y) coordinates are defined by the 33x33 matrix and the resolution used, defined by the tag.
      And the corrections to be applied for every point in that 33x33 matrix, are stored in the warp file.
-     This explains why this file only contains zero’s when no warp is applied.*/
+     This explains why this file only contains zeroâ€™s when no warp is applied.*/
 
     sgct::MessageHandler::instance()->print(sgct::MessageHandler::NOTIFY_INFO,
         "CorrectionMesh: Reading simcad warp data from '%s'.\n", meshPath.c_str());
@@ -2003,8 +2003,19 @@ bool sgct_core::CorrectionMesh::readAndGenerateMpcdiMesh(const std::string & mes
         //Reverse the y position because the values from pfm file are given in raster-scan
         // order, which is left to right but starts at upper-left rather than lower-left.
         smoothPos_y[i] = 1.0f - ((float)gridIndex_row    / (float)(numberOfRows - 1));
-        warpedPos_x[i] = smoothPos_x[i] + correctionGridX[i];
-        warpedPos_y[i] = smoothPos_y[i] + correctionGridY[i];
+
+        if (parent->mMpcdiInterpretWarpMeshDataDirectly)
+        {
+            warpedPos_x[i] = correctionGridX[i];
+            warpedPos_y[i] = correctionGridY[i];
+        }
+        else
+        {
+            warpedPos_x[i] = smoothPos_x[i] + correctionGridX[i];
+            warpedPos_y[i] = smoothPos_y[i] + correctionGridY[i];
+        }
+
+
     }
 
 #ifdef NORMALIZE_CORRECTION_MESH
