@@ -370,7 +370,7 @@ bool sgct_core::SGCTMpcdi::readAndParseXML_geoWarpFile(tinyxml2::XMLElement* ele
         {
             // 
             std::string interpretation = element[3]->GetText();
-            if (interpretation.compare("offset") != 0)
+            if (interpretation.compare("offset") == 0)
             {
                 sgct::MessageHandler::instance()->print(
                     sgct::MessageHandler::NOTIFY_DEBUG,
@@ -378,7 +378,7 @@ bool sgct_core::SGCTMpcdi::readAndParseXML_geoWarpFile(tinyxml2::XMLElement* ele
 
                 mWarp.back()->interpretation = MpcdiWarp::Interpretation::offset;
             }
-            else if (interpretation.compare("direct") != 0)
+            else if (interpretation.compare("direct") == 0)
             {
                 sgct::MessageHandler::instance()->print(
                     sgct::MessageHandler::NOTIFY_DEBUG,
